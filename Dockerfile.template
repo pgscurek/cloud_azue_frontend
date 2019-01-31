@@ -1,0 +1,19 @@
+# Initial attempt at creating a base rhel7 image.
+
+# The following line Pulls the rhel image from the red hat registry
+FROM registry.access.redhat.com/rhel
+
+LABEL MAINTAINER="Pete Scurek" 
+LABEL description="TEST image"
+USER root
+
+# Update image
+RUN yum repolist --disablerepo=* && \
+    yum-config-manager --disable \* > /dev/null && \
+    yum-config-manager --enable rhel-7-server-rpms > /dev/null
+# Add httpd package. procps and iproute are only added to investigate the image later.
+RUN yum install httpd procps iproute -y
+RUN bash -c 'echo "httpd_container.go.johnsoncontrols.com" > /etc/hostname'
+
+# Create an index.html file
+RUN bash -c 'echo "Your Web server test is successful." >> /var/www/html/index.html'
